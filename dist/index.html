@@ -1,376 +1,1095 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <meta
-      name="description"
-      content="Technical operations and infrastructure services for Forex/CFD brokers: trading platforms, liquidity bridges, CRM, automation, reporting, plugins, and support process implementation."
-    />
-    <meta name="author" content="Dmitriy Shelchek" />
-    <title>
-      Broker Technical Operation Services | MT4 MT5 cTrader | Infrastructure & Automation
-    </title>
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-    <link href="css/styles.css" rel="stylesheet" />
-  </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broker Technical Operation Services | MT4 MT5 cTrader | Infrastructure & Automation</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00e676;
+            --primary-dark: #00c853;
+            --accent: #00bfa5;
+            --dark: #0a0e27;
+            --dark-navy: #121835;
+            --dark-card: #1a1f3a;
+            --text: #e8eaf6;
+            --text-dim: #9fa8da;
+            --border: rgba(0, 230, 118, 0.15);
+        }
 
-  <body id="page-top">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Grid */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 230, 118, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 230, 118, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+            animation: gridPulse 15s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Floating Chart Lines */
+        .chart-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.08;
+        }
+
+        .chart-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: chartMove 20s linear infinite;
+        }
+
+        .chart-line:nth-child(1) { top: 20%; animation-duration: 18s; }
+        .chart-line:nth-child(2) { top: 45%; animation-duration: 22s; animation-delay: -5s; }
+        .chart-line:nth-child(3) { top: 70%; animation-duration: 25s; animation-delay: -10s; }
+
+        @keyframes chartMove {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 1.2rem 0;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
+        nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: translateX(5px);
+        }
+
+        .logo::before {
+            content: '▶';
+            font-size: 0.9rem;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease-out 0.2s backwards;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-dim);
+            margin-bottom: 3rem;
+            animation: fadeInUp 1s ease-out 0.4s backwards;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.6s backwards;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--dark);
+            box-shadow: 0 0 30px rgba(0, 230, 118, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(0, 230, 118, 0.6);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--dark);
+            transform: translateY(-3px);
+        }
+
+        /* Floating Cards Background */
+        .floating-card {
+            position: absolute;
+            width: 300px;
+            height: 200px;
+            background: rgba(26, 31, 58, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .floating-card:nth-child(1) {
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .floating-card:nth-child(2) {
+            top: 60%;
+            right: 8%;
+            animation-delay: -5s;
+        }
+
+        .floating-card:nth-child(3) {
+            bottom: 15%;
+            left: 10%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(2deg); }
+            66% { transform: translateY(30px) rotate(-2deg); }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        section {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text), var(--text-dim));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(0, 230, 118, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        /* About Section */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-content h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .about-content p {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+        }
+
+        .engagement-list {
+            list-style: none;
+            margin-top: 2rem;
+        }
+
+        .engagement-list li {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: rgba(0, 230, 118, 0.05);
+            border-left: 3px solid var(--primary);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .engagement-list li:hover {
+            background: rgba(0, 230, 118, 0.1);
+            transform: translateX(10px);
+        }
+
+        .engagement-list li::before {
+            content: '→';
+            color: var(--primary);
+            margin-right: 1rem;
+            font-weight: 700;
+        }
+
+        /* Visual Element */
+        .visual-element {
+            position: relative;
+            height: 450px;
+            background: linear-gradient(135deg, rgba(0, 230, 118, 0.1), rgba(0, 191, 165, 0.1));
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .chart-visualization {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 2rem;
+        }
+
+        .chart-bar {
+            width: 12%;
+            background: linear-gradient(to top, var(--primary), var(--accent));
+            border-radius: 8px 8px 0 0;
+            animation: growBar 2s ease-out forwards;
+            opacity: 0.8;
+            position: relative;
+        }
+
+        .chart-bar:nth-child(1) { height: 45%; animation-delay: 0.1s; }
+        .chart-bar:nth-child(2) { height: 70%; animation-delay: 0.2s; }
+        .chart-bar:nth-child(3) { height: 55%; animation-delay: 0.3s; }
+        .chart-bar:nth-child(4) { height: 85%; animation-delay: 0.4s; }
+        .chart-bar:nth-child(5) { height: 62%; animation-delay: 0.5s; }
+        .chart-bar:nth-child(6) { height: 78%; animation-delay: 0.6s; }
+
+        @keyframes growBar {
+            from {
+                transform: scaleY(0);
+                opacity: 0;
+            }
+            to {
+                transform: scaleY(1);
+                opacity: 0.8;
+            }
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: var(--dark-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 60px rgba(0, 230, 118, 0.2);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .service-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .service-card ul {
+            list-style: none;
+            color: var(--text-dim);
+        }
+
+        .service-card li {
+            padding: 0.6rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .service-card li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Training Section */
+        .training-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .training-box {
+            background: rgba(0, 230, 118, 0.05);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .training-box:hover {
+            border-color: var(--primary);
+            background: rgba(0, 230, 118, 0.08);
+        }
+
+        .training-box h4 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .training-box ul {
+            list-style: none;
+        }
+
+        .training-box li {
+            padding: 0.8rem 0;
+            color: var(--text-dim);
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .training-box li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        /* Engagement Models */
+        .engagement-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .engagement-card {
+            background: linear-gradient(135deg, rgba(0, 230, 118, 0.08), rgba(0, 191, 165, 0.08));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .engagement-card:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(0, 230, 118, 0.15), rgba(0, 191, 165, 0.15));
+        }
+
+        .engagement-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .engagement-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: var(--dark-navy);
+            padding: 6rem 0;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .contact-info h3 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+
+        .contact-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .contact-method {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem;
+            background: rgba(0, 230, 118, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .contact-method:hover {
+            background: rgba(0, 230, 118, 0.1);
+            border-color: var(--primary);
+            transform: translateX(10px);
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: var(--dark);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .contact-form {
+            background: var(--dark-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 230, 118, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0, 230, 118, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            width: 100%;
+            padding: 1.2rem;
+            background: var(--primary);
+            color: var(--dark);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .form-submit:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 230, 118, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--text-dim);
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-grid,
+            .training-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scroll Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .fade-in-delay-1 { animation-delay: 0.1s; }
+        .fade-in-delay-2 { animation-delay: 0.2s; }
+        .fade-in-delay-3 { animation-delay: 0.3s; }
+        .fade-in-delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-grid"></div>
+    <div class="chart-lines">
+        <div class="chart-line"></div>
+        <div class="chart-line"></div>
+        <div class="chart-line"></div>
+    </div>
+
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
-      <div class="container px-4">
-        <a class="navbar-brand" href="#page-top">
-          Broker TechOps Services
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarResponsive"
-          aria-controls="navbarResponsive"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-            <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-            <li class="nav-item"><a class="nav-link" href="#training">Training</a></li>
-            <li class="nav-item"><a class="nav-link" href="#engagement">Engagement</a></li>
-            <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-          </ul>
+    <nav>
+        <div class="container">
+            <a href="#" class="logo">Broker TechOps</a>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#training">Training</a></li>
+                <li><a href="#engagement">Engagement</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
         </div>
-      </div>
     </nav>
 
-    <!-- Header -->
-    <header class="bg-primary bg-gradient text-white">
-      <div class="container px-4 text-center">
-        <h1 class="fw-bolder">
-          Technical Operations for Forex & CFD Brokers
-        </h1>
-        <p class="lead mb-4">
-          Deployment, administration, and operational support of broker
-          infrastructure — from initial setup to ongoing production operations.
-        </p>
-        <a class="btn btn-lg btn-light me-2" href="#services">Services</a>
-        <a class="btn btn-lg btn-outline-light" href="#contact">Contact</a>
-      </div>
-    </header>
-
-    <!-- About -->
-    <section id="about">
-      <div class="container px-4">
-        <div class="row gx-4 justify-content-center">
-          <div class="col-lg-8">
-            <h2>About</h2>
-            <p class="lead">
-              We provide end-to-end technical operations services for Forex and
-              CFD brokers. Our scope covers trading platforms, liquidity
-              bridges, CRM systems, plugins, reporting, automation, and customer
-              support processes.
-            </p>
-
-            <p>
-              By using our services, brokers do not need to maintain a full
-              in-house technical team. We design, deploy, and operate broker
-              infrastructure from initial launch to stable production
-              environments.
-            </p>
-
-            <div class="mt-4">
-              <h5>Engagement approach</h5>
-              <ul>
-                <li>Infrastructure setup from zero to production-ready state</li>
-                <li>Deployment of testing and staging environments</li>
-                <li>Ongoing administration and operational support</li>
-                <li>Configuration changes, troubleshooting, and automation</li>
-                <li>Documentation and operational handover where required</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Services -->
-    <section class="bg-light" id="services">
-      <div class="container px-4">
-        <div class="row gx-4 justify-content-center">
-          <div class="col-lg-9">
-            <h2>Services</h2>
-
-            <!-- Trading Platforms -->
-            <div class="mt-4">
-              <h4>Trading Platforms Administration and Deployment</h4>
-              <ul>
-                <li>
-                  MT4 / MT5 deployments according to best practices and
-                  infrastructure positioning using Microsoft Azure, Oracle, Google Cloud or AliCloud.
-                </li>
-                <li>
-                  cTrader, MT4, and MT5 administration and configuration
-                </li>
-                <li>
-                  Deployment of testing and staging trading environments
-                  (pre-production)
-                </li>
-                <li>
-                  Installation, configuration, and testing of platform plugins
-                  (risk, execution control, reporting, compliance, utilities)
-                </li>
-                <li>
-                  Automation of routine actions:
-                  holiday calendars, dividends, swaps, reports, script
-                  implementations
-                </li>
-                <li>
-                  Investigation of trading cases and detailed log analysis
-                </li>
-                <li>
-                  Periodic platform updates, patches, and maintenance
-                </li>
-                <li>
-                  Monitoring of server performance:
-                  execution metrics and server load indicators
-                </li>
-              </ul>
-            </div>
-
-            <!-- Liquidity Bridges -->
-            <div class="mt-4">
-              <h4>Liquidity Bridge Management and Deployments</h4>
-              <ul>
-                <li>
-                  Liquidity bridge vendor analysis based on pricing,
-                  functionality, and operational limitations
-                </li>
-                <li>
-                  Preparation of comparison data sheets:
-                  pricing models, supported features, advantages, and drawbacks
-                </li>
-                <li>
-                  Liquidity bridge deployments according to best practices and
-                  infrastructure positioning
-                </li>
-                <li>
-                  Deployment of testing environments for bridge and LP
-                  validation
-                </li>
-                <li>
-                  Bridge configuration:
-                  LP connections, symbol setup, aggregation profiles,
-                  scalper detection and prevention, markups, and routing rules
-                </li>
-                <li>
-                  Feed and execution monitoring
-                </li>
-                <li>
-                  Execution issue troubleshooting:
-                  slippage spikes, rejects, partial fills, latency analysis
-                </li>
-              </ul>
-            </div>
-
-            <!-- CRM -->
-            <div class="mt-4">
-              <h4>CRM Management and Configuration</h4>
-              <ul>
-                <li>
-                  Payment gateway analysis based on pricing, supported regions,
-                  processing logic, and technical capabilities
-                </li>
-                <li>
-                  Preparation of comparison data sheets for payment providers
-                </li>
-                <li>
-                  Complete CRM configuration:
-                  account types, trading server connectivity, permissions,
-                  workflows
-                </li>
-                <li>
-                  MySQL server deployment and optimization for CRM usage
-                </li>
-                <li>
-                  Deployment of testing CRM environments for configuration and
-                  integration validation
-                </li>
-                <li>
-                  KYC configuration, onboarding flows, and document handling
-                </li>
-                <li>
-                  IB structure setup:
-                  referral flows, commission calculation logic, reporting
-                </li>
-               </ul>
-            </div>
-
-            <!-- Automation -->
-            <div class="mt-4">
-              <h4>Automation and Reporting</h4>
-              <ul>
-                <li>
-                  Custom operational reports:
-                  trading activity, volume, PnL, IB commissions, IB performance
-                </li>
-                <li>
-                  Automation scripts for repetitive support tasks:
-                  report generation, platform health checks
-                </li>
-                <li>
-                  Swaps uploads, dividend adjustments, holiday trading schedule
-                  configuration
-                </li>
-                <li>
-                  Data validation and consistency checks between systems
-                </li>
-              </ul>
-            </div>
-
-            <!-- Support Flows -->
-            <div class="mt-4">
-              <h4>Implementation for Customer Support Flows</h4>
-              <ul>
-                <li>
-                  Ticketing system deployment and configuration
-                </li>
-                <li>
-                  Incident management process implementation
-                </li>
-                <li>
-                  Request management and escalation process implementation
-                </li>
-                <li>
-                  CRM / MT4 / MT5 / Bridge training:
-                  issue investigation, triage, post-mortem analysis
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Training -->
-    <section id="training">
-      <div class="container px-4">
-        <div class="row gx-4 justify-content-center">
-          <div class="col-lg-8">
-            <h2>Training for Broker Teams</h2>
-            <p class="lead">
-              Technical training focused on daily operations and incident
-              handling for broker environments.
-            </p>
-
-            <ul>
-              <li>L1 / L2 support teams</li>
-              <li>Dealing and operations staff</li>
-              <li>New hires onboarding</li>
-            </ul>
-
-            <ul>
-              <li>MT4 / MT5 platform structure and configuration</li>
-              <li>Execution flow and common incident patterns</li>
-              <li>Operational routines and monitoring</li>
-              <li>Issue investigation and escalation</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Engagement -->
-    <section class="bg-light" id="engagement">
-      <div class="container px-4">
-        <div class="row gx-4 justify-content-center">
-          <div class="col-lg-8">
-            <h2>Engagement Models</h2>
-            <ul>
-              <li>One-off implementation or troubleshooting tasks</li>
-              <li>Ongoing operational support (weekly or monthly engagement)</li>
-              <li>Full infrastructure setup for new brokers</li>
-              <li>Temporary replacement of in-house technical functions</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-           
-<!-- Contact Section -->
-<section id="contact" class="bg-light py-5">
-  <div class="container px-4">
-    <div class="row gx-4 justify-content-center">
-      <div class="col-lg-8">
-        <h2 class="text-center fw-bolder">Get in Touch</h2>
-        <p class="lead text-center mb-4">
-          Ready to optimize your brokerage operations? Send a request or reach out directly.
-        </p>
-
-      <!-- Direct Contact Info & Socials -->
-<div class="text-center mb-5">
-  <div class="d-inline-block p-4 border rounded bg-white shadow-sm">
-    <div class="mb-2">
-      <span class="fw-bold text-primary">Email:</span> 
-      <a href="mailto:info@brokertechops.com" class="text-decoration-none ms-1 fw-bold text-dark">info@brokertechops.com</a>
-    </div>
-    <div class="mt-3">
-      <!-- Telegram: Replace 'yourusername' with your actual Telegram handle -->
-      <a href="https://t.me" target="_blank" class="btn btn-outline-primary btn-sm me-2">
-        Telegram
-      </a>
-      <!-- LinkedIn: Replace the URL with your actual LinkedIn profile link -->
-      <a href="https://www.linkedin.com" target="_blank" class="btn btn-outline-primary btn-sm">
-        LinkedIn
-      </a>
-    </div>
-  </div>
-</div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="floating-card"></div>
+        <div class="floating-card"></div>
+        <div class="floating-card"></div>
         
-        <!-- Contact Form (Connected to Formspree) -->
-        <!-- Replace YOUR_ID with the ID provided by Formspree -->
-        <form id="contactForm" action="https://formspree.io/f/xwvqprpq" method="POST" class="bg-white p-4 p-md-5 rounded shadow-sm border">
-          <div class="row mb-3">
-            <div class="col-md-6 mb-3 mb-md-0">
-              <label for="name" class="form-label fw-bold">Full Name</label>
-              <input type="text" name="name" class="form-control" id="name" placeholder="Enter your name" required>
+        <div class="hero-content">
+            <h1>Technical Operations for Forex & CFD Brokers</h1>
+            <p>Deployment, administration, and operational support of broker infrastructure — from initial setup to ongoing production operations.</p>
+            <div class="hero-buttons">
+                <a href="#services" class="btn btn-primary">
+                    Explore Services →
+                </a>
+                <a href="#contact" class="btn btn-outline">
+                    Get in Touch
+                </a>
             </div>
-            <div class="col-md-6">
-              <label for="email" class="form-label fw-bold">Email Address</label>
-              <input type="email" name="email" class="form-control" id="email" placeholder="name@example.com" required>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">// WHO WE ARE</span>
+                <h2>About</h2>
             </div>
-          </div>
-          
-          <div class="mb-3">
-            <label for="service" class="form-label fw-bold">Interested Service</label>
-            <select class="form-select" id="service" name="service">
-              <option selected disabled>Choose a service...</option>
-              <option value="Trading Platforms">Trading Platform Administration (MT4/MT5/cTrader)</option>
-              <option value="Liquidity">Liquidity Bridge Management</option>
-              <option value="CRM">CRM & Payment Gateway Configuration</option>
-              <option value="Automation">Custom Automation & Reporting</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
+            <div class="about-grid">
+                <div class="about-content">
+                    <p>We provide end-to-end technical operations services for Forex and CFD brokers. Our scope covers trading platforms, liquidity bridges, CRM systems, plugins, reporting, automation, and customer support processes.</p>
+                    
+                    <p>By using our services, brokers do not need to maintain a full in-house technical team. We design, deploy, and operate broker infrastructure from initial launch to stable production environments.</p>
+                    
+                    <h3>Engagement approach</h3>
+                    <ul class="engagement-list">
+                        <li>Infrastructure setup from zero to production-ready state</li>
+                        <li>Deployment of testing and staging environments</li>
+                        <li>Ongoing administration and operational support</li>
+                        <li>Configuration changes, troubleshooting, and automation</li>
+                        <li>Documentation and operational handover where required</li>
+                    </ul>
+                </div>
+                <div class="visual-element">
+                    <div class="chart-visualization">
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-          <div class="mb-3">
-            <label for="message" class="form-label fw-bold">Message</label>
-            <textarea class="form-control" id="message" name="message" rows="5" placeholder="Describe your technical requirements..." required></textarea>
-          </div>
+    <!-- Services Section -->
+    <section id="services">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">// WHAT WE OFFER</span>
+                <h2>Services</h2>
+            </div>
+            <div class="services-grid">
+                <div class="service-card fade-in fade-in-delay-1">
+                    <div class="service-icon">📊</div>
+                    <h4>Trading Platforms Administration and Deployment</h4>
+                    <ul>
+                        <li>MT4 / MT5 deployments according to best practices and infrastructure positioning using Microsoft Azure, Oracle, Google Cloud or AliCloud</li>
+                        <li>cTrader, MT4, and MT5 administration and configuration</li>
+                        <li>Deployment of testing and staging trading environments (pre-production)</li>
+                        <li>Installation, configuration, and testing of platform plugins (risk, execution control, reporting, compliance, utilities)</li>
+                        <li>Automation of routine actions: holiday calendars, dividends, swaps, reports, script implementations</li>
+                        <li>Investigation of trading cases and detailed log analysis</li>
+                        <li>Periodic platform updates, patches, and maintenance</li>
+                        <li>Monitoring of server performance: execution metrics and server load indicators</li>
+                    </ul>
+                </div>
 
-          <!-- Cloudflare Turnstile (Optional but recommended to keep here) -->
-          <!-- Formspree also has built-in spam protection -->
+                <div class="service-card fade-in fade-in-delay-2">
+                    <div class="service-icon">🔗</div>
+                    <h4>Liquidity Bridge Management and Deployments</h4>
+                    <ul>
+                        <li>Liquidity bridge vendor analysis based on pricing, functionality, and operational limitations</li>
+                        <li>Preparation of comparison data sheets: pricing models, supported features, advantages, and drawbacks</li>
+                        <li>Liquidity bridge deployments according to best practices and infrastructure positioning</li>
+                        <li>Deployment of testing environments for bridge and LP validation</li>
+                        <li>Bridge configuration: LP connections, symbol setup, aggregation profiles, scalper detection and prevention, markups, and routing rules</li>
+                        <li>Feed and execution monitoring</li>
+                        <li>Execution issue troubleshooting: slippage spikes, rejects, partial fills, latency analysis</li>
+                    </ul>
+                </div>
 
-          <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary btn-xl px-5 fw-bold shadow">Send Message</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</section>
+                <div class="service-card fade-in fade-in-delay-3">
+                    <div class="service-icon">⚙️</div>
+                    <h4>CRM Management and Configuration</h4>
+                    <ul>
+                        <li>Payment gateway analysis based on pricing, supported regions, processing logic, and technical capabilities</li>
+                        <li>Preparation of comparison data sheets for payment providers</li>
+                        <li>Complete CRM configuration: account types, trading server connectivity, permissions, workflows</li>
+                        <li>MySQL server deployment and optimization for CRM usage</li>
+                        <li>Deployment of testing CRM environments for configuration and integration validation</li>
+                        <li>KYC configuration, onboarding flows, and document handling</li>
+                        <li>IB structure setup: referral flows, commission calculation logic, reporting</li>
+                    </ul>
+                </div>
+
+                <div class="service-card fade-in fade-in-delay-4">
+                    <div class="service-icon">🤖</div>
+                    <h4>Automation and Reporting</h4>
+                    <ul>
+                        <li>Custom operational reports: trading activity, volume, PnL, IB commissions, IB performance</li>
+                        <li>Automation scripts for repetitive support tasks: report generation, platform health checks</li>
+                        <li>Swaps uploads, dividend adjustments, holiday trading schedule configuration</li>
+                        <li>Data validation and consistency checks between systems</li>
+                    </ul>
+                </div>
+
+                <div class="service-card fade-in fade-in-delay-1">
+                    <div class="service-icon">💬</div>
+                    <h4>Implementation for Customer Support Flows</h4>
+                    <ul>
+                        <li>Ticketing system deployment and configuration</li>
+                        <li>Incident management process implementation</li>
+                        <li>Request management and escalation process implementation</li>
+                        <li>CRM / MT4 / MT5 / Bridge training: issue investigation, triage, post-mortem analysis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Training Section -->
+    <section id="training">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">// SKILL DEVELOPMENT</span>
+                <h2>Training for Broker Teams</h2>
+                <p style="color: var(--text-dim); max-width: 800px; margin: 0 auto;">Technical training focused on daily operations and incident handling for broker environments.</p>
+            </div>
+            <div class="training-grid">
+                <div class="training-box">
+                    <h4>Who We Train:</h4>
+                    <ul>
+                        <li>L1 / L2 support teams</li>
+                        <li>Dealing and operations staff</li>
+                        <li>New hires onboarding</li>
+                    </ul>
+                </div>
+                <div class="training-box">
+                    <h4>Training Topics:</h4>
+                    <ul>
+                        <li>MT4 / MT5 platform structure and configuration</li>
+                        <li>Execution flow and common incident patterns</li>
+                        <li>Operational routines and monitoring</li>
+                        <li>Issue investigation and escalation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Engagement Section -->
+    <section id="engagement">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">// COLLABORATION OPTIONS</span>
+                <h2>Engagement Models</h2>
+            </div>
+            <div class="engagement-cards">
+                <div class="engagement-card">
+                    <div class="engagement-icon">⚡</div>
+                    <h4>One-off Projects</h4>
+                    <p style="color: var(--text-dim);">Implementation or troubleshooting tasks</p>
+                </div>
+                <div class="engagement-card">
+                    <div class="engagement-icon">🔄</div>
+                    <h4>Ongoing Support</h4>
+                    <p style="color: var(--text-dim);">Weekly or monthly engagement</p>
+                </div>
+                <div class="engagement-card">
+                    <div class="engagement-icon">🚀</div>
+                    <h4>Full Infrastructure</h4>
+                    <p style="color: var(--text-dim);">Complete setup for new brokers</p>
+                </div>
+                <div class="engagement-card">
+                    <div class="engagement-icon">🔧</div>
+                    <h4>Temporary Coverage</h4>
+                    <p style="color: var(--text-dim);">Replacement of in-house functions</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">// LET'S CONNECT</span>
+                <h2>Get in Touch</h2>
+                <p style="color: var(--text-dim);">Ready to optimize your brokerage operations? Send a request or reach out directly.</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h3>Contact Methods</h3>
+                    <div class="contact-methods">
+                        <a href="mailto:[email protected]" class="contact-method">
+                            <div class="contact-icon">@</div>
+                            <div>
+                                <div style="font-weight: 600;">Email</div>
+                                <div style="font-size: 0.9rem; color: var(--text-dim);">[email protected]</div>
+                            </div>
+                        </a>
+                        <a href="https://t.me" class="contact-method" target="_blank">
+                            <div class="contact-icon">TG</div>
+                            <div>
+                                <div style="font-weight: 600;">Telegram</div>
+                                <div style="font-size: 0.9rem; color: var(--text-dim);">Message us on Telegram</div>
+                            </div>
+                        </a>
+                        <a href="https://www.linkedin.com" class="contact-method" target="_blank">
+                            <div class="contact-icon">in</div>
+                            <div>
+                                <div style="font-weight: 600;">LinkedIn</div>
+                                <div style="font-size: 0.9rem; color: var(--text-dim);">Connect on LinkedIn</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Interested Service</label>
+                            <select>
+                                <option>Choose a service...</option>
+                                <option>Trading Platform Administration (MT4/MT5/cTrader)</option>
+                                <option>Liquidity Bridge Management</option>
+                                <option>CRM & Payment Gateway Configuration</option>
+                                <option>Custom Automation & Reporting</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea required></textarea>
+                        </div>
+                        <button type="submit" class="form-submit">Send Message →</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Broker TechOps Services. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
