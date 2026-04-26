@@ -1096,6 +1096,43 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
+                    entry.target.style.transform = 'translateY(0)';                                    
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach((el) => {
+        observer.observe(el);
+    });
+
+    // Optional: Contact form handler
+    const contactForm = document.querySelector('.contact-form form');
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const submitButton = this.querySelector('.form-submit');
+            const originalText = submitButton.textContent;
+
+            submitButton.textContent = 'Sending...';
+            submitButton.disabled = true;
+
+            setTimeout(() => {
+                submitButton.textContent = 'Message Sent ✓';
+                submitButton.style.background = '#00c853';
+
+                setTimeout(() => {
+                    submitButton.textContent = originalText;
+                    submitButton.disabled = false;
+                    submitButton.style.background = '';
+                    this.reset();
+                }, 2500);
+            }, 1500);
+        });
+    }
+</script>
+</body>
+</html>
+                        }
            
